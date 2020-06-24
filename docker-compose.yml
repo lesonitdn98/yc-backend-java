@@ -1,0 +1,76 @@
+version: '3'
+services:
+  hk-nginx:
+   container_name: hk-nginx
+   image: nginx:latest
+   restart: always
+   ports:
+   - 80:80
+   - 443:443
+   volumes:
+   - ./nginx/conf.d:/etc/nginx/conf.d
+   depends_on:
+   - app
+   networks:
+     backend:
+       aliases:
+         - yc-app
+
+  mysql-db:
+   container_name: mysql-db
+   image: mysql/mysql-server:5.7
+   volumes:
+     - ./run/var:/var/lib/mysql
+   environment:
+    MYSQL_DATABASE: yoncoffee
+    MYSQL_ROOT_PASSWORD: 20071998
+    MYSQL_USER: admin
+    MYSQL_PASSWORD: admin
+    MYSQL_ROOT_HOST: '%'
+   ports:
+   - "3306:3306"
+   restart: always
+   networks:
+     backend:
+       aliases:
+         - db
+
+  # phpmyadmin
+  phpmyadmin:
+    container_name: c-phpmyadmin
+    depends_on:
+      - mysql-db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8080:80'
+    environment:
+      PMA_HOST: mysql-db
+      MYSQL_ROOT_PASSWORD: 20071998
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+    networks:
+      backend:
+        aliases:
+          - db
+
+  app:
+    restart: always
+    build: ./
+    working_dir: /yoncoffee
+    volumes:
+      - ./:/yoncoffee
+      - ~/.m2:/root/.m2
+    expose:
+      - "8080"
+    command: mvn clean spring-boot:run
+    depends_on:
+      - mysql-db
+    networks:
+      backend:
+        aliases:
+          - yc-app
+
+networks:
+  backend:
+    driver: bridge
