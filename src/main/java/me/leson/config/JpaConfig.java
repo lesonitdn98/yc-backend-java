@@ -13,7 +13,8 @@ public class JpaConfig {
     @Primary
     public DataSource mySqlDataSource() {
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.url("jdbc:mysql://localhost:3306/db_yoncoffee");
+        //dataSourceBuilder.url("jdbc:mysql://localhost:3306/db_yoncoffee");
+        dataSourceBuilder.url("jdbc:mysql://mysql-db:3306/yoncoffee");
         dataSourceBuilder.username("root");
         dataSourceBuilder.password("20071998");
         return dataSourceBuilder.build();
