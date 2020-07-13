@@ -11,10 +11,6 @@ services:
    - ./nginx/conf.d:/etc/nginx/conf.d
    depends_on:
    - app
-   networks:
-     backend:
-       aliases:
-         - yc-app
 
   mysql-db:
    container_name: mysql-db
@@ -30,29 +26,6 @@ services:
    ports:
    - "3306:3306"
    restart: always
-   networks:
-     backend:
-       aliases:
-         - db
-
-  # phpmyadmin
-  phpmyadmin:
-    container_name: c-phpmyadmin
-    depends_on:
-      - mysql-db
-    image: phpmyadmin/phpmyadmin
-    restart: always
-    ports:
-      - '8080:80'
-    environment:
-      PMA_HOST: mysql-db
-      MYSQL_ROOT_PASSWORD: 20071998
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-    networks:
-      backend:
-        aliases:
-          - db
 
   app:
     restart: always
@@ -66,11 +39,3 @@ services:
     command: mvn clean spring-boot:run
     depends_on:
       - mysql-db
-    networks:
-      backend:
-        aliases:
-          - yc-app
-
-networks:
-  backend:
-    driver: bridge
