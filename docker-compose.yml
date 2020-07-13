@@ -11,6 +11,10 @@ services:
    - ./nginx/conf.d:/etc/nginx/conf.d
    depends_on:
    - app
+   networks:
+     backend:
+       aliases:
+         - yc-app
 
   mysql-db:
    container_name: mysql-db
@@ -26,6 +30,10 @@ services:
    ports:
    - "3306:3306"
    restart: always
+   networks:
+     backend:
+       aliases:
+         - db
 
   app:
     restart: always
@@ -39,3 +47,11 @@ services:
     command: mvn clean spring-boot:run
     depends_on:
       - mysql-db
+    networks:
+      backend:
+        aliases:
+          - yc-app
+
+networks:
+  backend:
+    driver: bridge
